@@ -7,7 +7,9 @@
 
 (require 'cl)
 
-(require 'w32-fullscreen)
+(cond ((eq window-system 'w32) 
+       (require 'w32-fullscreen)))
+        
 (require 'frame-local-vars)
 
 ;; ------ configuration -----
@@ -127,7 +129,10 @@
   (darkroom-remember 'frame-left (frame-parameter nil 'left))
   (darkroom-remember 'frame-top (frame-parameter nil 'top))
   ; - set
-  (w32-fullscreen-on)
+  (cond ((eq window-system 'w32)
+           (w32-fullscreen-on))
+         ((eq window-system 'mac)
+           (set-frame-parameter nil 'fullscreen 'fullboth)))
   (darkroom-mode-set-enabled t)
   (message (format "darkroom mode enabled on %s" (selected-frame))))
 
@@ -172,7 +177,10 @@
 		       (darkroom-recall 'right-margin-width))))
   (darkroom-mode-update-window)
   ; - restore frame size	 
-  (w32-fullscreen-off)
+  (cond ((eq window-system 'w32) 
+           (w32-fullscreen-off))
+         ((eq window-system 'mac)
+         (set-frame-parameter nil 'fullscreen nil)))
   (darkroom-mode-recall-frame-size)
   (darkroom-mode-set-enabled nil)
   (message (format "darkroom-mode disabled on %s" (selected-frame)))
