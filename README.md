@@ -6,9 +6,14 @@ writing text, but not programming. It will center the current frame on
 the screen and select `Lucida Sans Typewriter` as the default font
 with a font size of 16pt.
 
-After endless hours of user research we found that this is the best
-setting. Howver, all the possibilities to configure your editor remain
-intact.
+Basically the Idea is based on some writing focussed modes for Emacs
+and of course the gorgeous marketing of iA Writer. Using my patched
+darkroom-mode I want to show that it is easily possible to achieve the
+same result with only a single and free plugin for Emacs.
+
+*After endless hours of user research we found that this mode is the
+best and the default settings are the ones to keep. Howver, all the
+possibilities to configure your editor remain intact.*
 
 
 *Shamelessly idea copy of http://www.informationarchitects.jp/en/ia-writer-for-mac/*
