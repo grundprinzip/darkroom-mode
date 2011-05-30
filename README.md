@@ -23,11 +23,11 @@ To run `darkroom-mode` you only have to execute
 
 Attached a screenshot of the darkroommode on a mac
 
-![Before](images/before.png)
+![Before](https://github.com/grundprinzip/darkroom-mode/raw/master/images/before.png)
 
 With activated `darkroom-mode`
 
-![After](images/after.png)
+![After](https://github.com/grundprinzip/darkroom-mode/raw/master/images/after.png)
        
 ## Configuration
 
