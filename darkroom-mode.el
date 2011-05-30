@@ -13,14 +13,13 @@
 (require 'frame-local-vars)
 
 ;; ------ configuration -----
-(defvar darkroom-mode-face-foreground "NavajoWhite"
+(defvar darkroom-mode-face-foreground "Lucida Sans Typewriter"
   "The foreground color of the default face")
 
-(defvar darkroom-mode-left-margin 30
-  "Margin to add to the left side of the screen, depends on your resolution and prefered column width")
+(defvar darkroom-mode-face-size 160
+  "Default font size" )
 
-(defvar darkroom-mode-right-margin 30
-  "Margin to add to the right side of the screen, depends on your resolution and prefered column width")
+(defvar darkroom-mode-center-margin 100 "")
 
 (defvar darkroom-mode-enable-multi-monitor-support t
   "Whether to enable multi-frame (i.e multiple monitor) support. An option since this feature is experimental")
@@ -50,6 +49,7 @@
   (darkroom-recall 'darkroom-mode-enabled))
 
 (defun darkroom-mode-update-window()
+  (message "Updating Window")
   (set-window-margins (selected-window)
 		      left-margin-width
 		      right-margin-width))
@@ -63,25 +63,11 @@
 
 (defun darkroom-mode-enable()
   (interactive)
-  ; ----- colors
-  ; - remember colors
-  (darkroom-remember 'background-color (frame-parameter nil 'background-color))
-  (darkroom-remember 'foreground-color (frame-parameter nil 'foreground-color))
-  (darkroom-remember 'cursor-color (frame-parameter nil 'cursor-color))
-  (darkroom-remember 'fc-bg-region (face-background 'region))
-  (darkroom-remember 'fc-fg-region (face-foreground 'region))
-  (darkroom-remember 'fc-bg-modeline (face-background 'mode-line))
-  (darkroom-remember 'fc-fg-modeline (face-foreground 'mode-line))
-  ; - set colors
-  (modify-frame-parameters
-   (selected-frame)
-   `((background-color . "black")
-     (foreground-color . ,darkroom-mode-face-foreground)
-     (cursor-color . "white")))
-  (set-face-foreground 'region "black" (selected-frame))
-  (set-face-background 'region "green" (selected-frame))
-  (set-face-foreground 'mode-line "gray15" (selected-frame))
-  (set-face-background 'mode-line "black" (selected-frame))
+
+  (darkroom-remember 'default-font (face-attribute 'default :font))
+  (darkroom-remember 'default-font-size (face-attribute 'default :height))
+  (set-face-attribute 'default (selected-frame) :font darkroom-mode-face-foreground)
+  (set-face-attribute 'default (selected-frame) :height darkroom-mode-face-size)
   
   ; ----- margins
   ; note: margins are buffer local, so if multi-monitor support is
@@ -95,12 +81,12 @@
 		       (default-value 'right-margin-width)))
   ; - set margins
   (cond (darkroom-mode-enable-multi-monitor-support
-	 (setq-frame-default 'left-margin-width darkroom-mode-left-margin)
-	 (setq-frame-default 'right-margin-width darkroom-mode-right-margin)
+	 (setq-frame-default 'left-margin-width (/ (- (frame-width) darkroom-mode-center-margin) 2))
+	 (setq-frame-default 'right-margin-width (/ (- (frame-width) darkroom-mode-center-margin) 2))
 	 (frame-local-variables-check t))
 	(t
-	 (setq-default left-margin-width darkroom-mode-left-margin)
-	 (setq-default right-margin-width darkroom-mode-right-margin)))
+	 (setq-default left-margin-width (/ (- (frame-width) darkroom-mode-center-margin) 2))
+	 (setq-default right-margin-width (/ (- (frame-width) darkroom-mode-center-margin) 2))))
   (darkroom-mode-update-window)
   
   ; ----- other settings
@@ -128,28 +114,21 @@
   (darkroom-remember 'frame-height (frame-parameter nil 'height))
   (darkroom-remember 'frame-left (frame-parameter nil 'left))
   (darkroom-remember 'frame-top (frame-parameter nil 'top))
-  ; - set
-  (cond ((eq window-system 'w32)
-           (w32-fullscreen-on))
-         ((eq window-system 'mac)
-           (set-frame-parameter nil 'fullscreen 'fullboth)))
+
+  ;;  - set
+  ;; (cond ((eq window-system 'w32)
+  ;;          (w32-fullscreen-on))
+  ;;        ((eq window-system 'mac)
+  ;;          (set-frame-parameter nil 'fullscreen 'fullboth)))
   (darkroom-mode-set-enabled t)
   (message (format "darkroom mode enabled on %s" (selected-frame))))
 
 (defun darkroom-mode-disable()
   (interactive)
-  ; - restore colors
-  (modify-frame-parameters
-   (selected-frame)
-   `((background-color . ,(darkroom-recall 'background-color))
-     (foreground-color . ,(darkroom-recall 'foreground-color))
-     (cursor-color . ,(darkroom-recall 'cursor-color))))
-  (set-face-foreground 'region
-		       (darkroom-recall 'fc-fg-region) (selected-frame))
-  (set-face-background 'region
-		       (darkroom-recall 'fc-bg-region) (selected-frame))
-  (set-face-foreground 'mode-line
-		       (darkroom-recall 'fc-fg-modeline) (selected-frame))
+
+  (set-face-attribute 'default (selected-frame) :font (darkroom-recall 'default-font))
+  (set-face-attribute 'default (selected-frame) :height (darkroom-recall 'default-font-size))
+  
   (set-face-background 'mode-line
 		       (darkroom-recall 'fc-bg-modeline) (selected-frame))
   ; - restore other settings
@@ -177,10 +156,10 @@
 		       (darkroom-recall 'right-margin-width))))
   (darkroom-mode-update-window)
   ; - restore frame size	 
-  (cond ((eq window-system 'w32) 
-           (w32-fullscreen-off))
-         ((eq window-system 'mac)
-         (set-frame-parameter nil 'fullscreen nil)))
+  ;; (cond ((eq window-system 'w32) 
+  ;;          (w32-fullscreen-off))
+  ;;        ((eq window-system 'mac)
+  ;;        (set-frame-parameter nil 'fullscreen nil)))
   (darkroom-mode-recall-frame-size)
   (darkroom-mode-set-enabled nil)
   (message (format "darkroom-mode disabled on %s" (selected-frame)))
